@@ -1,0 +1,22 @@
+{
+  "name": "tossit",
+  "version": "0.0.1",
+  "description": "Screen Sharing Solution for organizations using Kurento Media Server",
+  "main": "Server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "tossIT"
+  },
+  "dependencies" : {
+    "path": "",
+    "url": "",
+    "express": "",
+    "kurento-client": "",
+    "fs": ""
+  },
+  "author": "Chris Schulte <chris75898@gmail.com>",
+  "license": "Apache-2.0"
+}
