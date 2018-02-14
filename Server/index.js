@@ -20,7 +20,9 @@ var tlsCertPath = "Config/server.crt";
 var tlsOptions = {};
 if (!fs.existsSync(tlsKeyPath) || !fs.existsSync(tlsCertPath))
 {
-	pem.createCertificate({ days: 1024, selfSigned: true}, function(err, keys){
+	pem.createCertificate({ days: 1024, selfSigned: true}, function(err, keys)
+	{
+		msg.logDebug("SSL Certificate could not be found, generating self-signed certificates");
 		tlsOptions.key = keys.serviceKey;
 		tlsOptions.cert = keys.certificate;
 		startServer();
