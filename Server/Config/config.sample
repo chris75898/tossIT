@@ -1,0 +1,1 @@
+{\"version\":\"1.0.0\",\"OrganizationName\":\"Sample Organization Name\",\"QuickAddress\":\"http://alturl.com/SAMPLE\",\"adminUserName\":\"admin\",\"adminUserSalt\":\"RandomSaltForHash\",\"adminUserPasswordHash\":\"-----Sample Hash-----\",\"ChromeExtensionUrl\":\"Pointer to Chrome Extension\",\"androidAppUrl\":\"Pointer to Android App\",\"iosAppUrl\":\"Pointer to iosApp\"}

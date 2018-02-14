@@ -1,1 +1,2 @@
 Server/Config/**
+!/Server/Config/config.sample
