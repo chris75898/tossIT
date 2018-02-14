@@ -86,8 +86,8 @@ function startServer()
 							break;
 			        }
 			    });
-		}
-	}
+		});
+	});
 }
 
 
