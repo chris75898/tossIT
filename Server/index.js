@@ -15,8 +15,8 @@ var rooms = require("./rooms.js");
 var app = express();
 
 //Make sure certificates exists
-var tlsKeyPath = "keys/server.key";
-var tlsCertPath = "keys/server.crt";
+var tlsKeyPath = "Config/server.key";
+var tlsCertPath = "Config/server.crt";
 var tlsOptions = {};
 if (!fs.existsSync(tlsKeyPath) || !fs.existsSync(tlsCertPath))
 {
@@ -104,4 +104,4 @@ function onNewConnection(ws)
     return sessionCounter.toString();
 }
 
-app.use(express.static(path.join(__dirname, 'Statics')));
+app.use(express.static(path.join(__dirname, 'Static')));
