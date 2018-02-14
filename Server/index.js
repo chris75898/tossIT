@@ -4,6 +4,7 @@ var express = require('express');
 var ws = require('ws');
 var kurento = require('kurento-client');
 var fs    = require('fs');
+var pem  = require("pem");
 var https = require('https');
 var msg = require("./messaging.js");
 var rooms = require("./rooms.js");
