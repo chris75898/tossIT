@@ -1,5 +1,5 @@
 var kurentoTools = require("./kurentoTools.js");
-var deviceObjects = require('./objects3.js');
+var deviceObjects = require('./objects.js');
 var msg = require("./messaging.js");
 
 exports.addScreen = function(sessionId, ws, roomNameArray)
