@@ -1,0 +1,185 @@
+<html>
+    <head>
+        <style>
+            @font-face {
+  font-family: 'opendyslexic';
+    src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Regular.otf');
+    font-style: normal;
+    font-weight: normal;
+} 
+
+@font-face {
+    font-family: 'opendyslexic';
+    src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Bold.ttf');
+    font-weight: bold;
+    font-style: normal;
+} 
+
+@font-face {
+    font-family: eulexia;
+    src: url('https://dyslexicfonts.com/fonts/eulexia.ttf');
+} 
+</style>
+<style>
+        video.loadingVideo {
+            background: black url(images/loading.svg) center center no-repeat;
+            background-size: 20%;
+            background-color: transparent;
+        }
+
+            #deviceInfo
+            {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                color: white;
+                padding: 10px;
+                background-color:rgba(0, 0, 0, 0.5);
+                text-align: left;
+                border-radius: 10px;
+            }
+            #titlePage, #connecting
+            {
+                color: white;
+                background-color: rgba(0, 0, 0, 0.5);   
+                display: inline-block;
+                text-align: center;
+                padding: 10px;
+                margin-top: 5%;
+                border-radius: 10px;
+            }
+            #deviceInfo > div 
+            {
+                padding-top: 4px;
+            }
+            #deviceOptions > img
+            {
+                width: 80px;
+                padding: 0px 15px;
+            }
+            #deviceOptions
+            {
+                margin-top: 20px;
+            }
+            .title
+            {
+                font-size: 200%;
+            }
+            body
+            {
+                /*0%{background-image: radial-gradient(circle at 50% 20%, #3498db  0%, #2c3e50  100%)}
+                40%{background-image: radial-gradient(circle at 50% 20%, #0A0A3F  0%, #8383B5  100%)}
+                80%{background-image: radial-gradient(circle at 50% 20%, #801515  0%, #550000  100%)}
+                100%{background-image: radial-gradient(circle at 50% 20%, #3498db  0%, #2c3e50  100%)}
+                */
+                background: linear-gradient(-45deg, white, #3498db, #0A0A3F, #801515, #2c3e50);
+                background-size: 400% 400%;
+                -webkit-animation: Gradient 130s ease infinite;
+                -moz-animation: Gradient 130s ease infinite;
+                animation: Gradient 130s ease infinite;
+            }
+            @-webkit-keyframes Gradient {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+@-moz-keyframes Gradient {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+@keyframes Gradient {
+    0% {
+        background-position: 0% 50%
+    }
+    50% {
+        background-position: 100% 50%
+    }
+    100% {
+        background-position: 0% 50%
+    }
+}
+        </style>
+        <style>
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 10px auto;
+            background-color: white;
+
+            border-radius: 100%;  
+            -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+            animation: sk-scaleout 1.0s infinite ease-in-out;
+            }
+
+            @-webkit-keyframes sk-scaleout {
+            0% { -webkit-transform: scale(0) }
+            100% {
+                -webkit-transform: scale(1.0);
+                opacity: 0;
+            }
+            }
+
+            @keyframes sk-scaleout {
+            0% { 
+                -webkit-transform: scale(0);
+                transform: scale(0);
+            } 100% {
+                -webkit-transform: scale(1.0);
+                transform: scale(1.0);
+                opacity: 0;
+            }
+            }
+        </style>
+            <script src="bower_components/adapter.js/adapter.js"></script>
+            <script src="bower_components/jquery/jquery.min.js"></script>
+            <script src="bower_components/demo-console/index.js"></script>
+
+            <script src="bower_components/kurento-utils/kurento-utils.js"></script>
+
+            <script src="js/connection.js"></script>
+            <script src="js/communication.js"></script>
+            <script src="js/functions.js"></script>
+
+    </head>
+    <body style="font-family:opendyslexic; text-align: center; margin: 0">
+        <div id="titlePage" style="display: none">
+            <div><img src="images/horseShoe.png" style="padding: 10px; margin-bottom: 5px; width:18%; background-color: white; border-radius: 50%"/></div>
+            <div class="title">tossIT</div>
+            <br /><br />
+            <div>Start Sharing Now<br />Go to http://alturl.com/QGQEQ from any device</div>
+            <br />
+            <div id="deviceOptions"><img src="images/desktop.svg" /><img src="images/laptop.svg" /><img src="images/iPad.svg" /><img src="images/iPhone.svg" /><img src="images/android.svg" /></div>            
+        </div>
+        <video autoplay id="videoScreen" controls="false" style="display: none; width: 100%; height: 100%;" poster="data:image/gif,AAAA"></video>
+        <div id="deviceInfo">
+            <div id="deviceName"></div>
+            <div id="securityCode" style="display: none";>Access Code: <span id="securityCodeValue" style="letter-spacing: 3px"></span></div>
+            <div id="securityCode">Connect to device at <span style="border-bottom: 2px solid white;">http://alturl.com/QGQEQ</span></div>
+        </div>        
+
+        <div id="connecting">
+                <div><img src="images/horseShoe.png" style="padding: 10px; margin-bottom: 5px; width:18%; background-color: white; border-radius: 50%"/></div>
+                <div class="title">tossIT </div>
+                <br />
+                <div>A Screen Sharing Solution</div>
+                <br /><br />
+                <div class="spinner"></div>
+                <div>Connecting</div>
+        </div>
+    </body>
+</html>
