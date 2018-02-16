@@ -83,7 +83,7 @@ function initializeServer()
 		
 		for(var eachItem in config)
 		{
-			if (config.eachItem.isHidden)
+			if (config[eachItem].isHidden)
 				continue;
 			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input type='text' name='" + encodeURIComponent(config[eachItem]) + "' value='" + encodeURIComponent(config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
 		}
