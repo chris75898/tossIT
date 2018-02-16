@@ -31,10 +31,10 @@ if (fs.existsSync(configFilePath))
 else config = {};
 var requiredConfigParams = [];
 requiredConfigParams["OrganizationName"] = {label: "Organization's Name", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string", onNewValue = function(config, value) {config.value = value; updateClientConfigurations("QuickAddress", value);}};
+requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string", onNewValue : function(config, value) {config.value = value; updateClientConfigurations("QuickAddress", value);}};
 requiredConfigParams["adminUserName"] = {label: "Admin Username", defulatValue: "admin", isHidden: false, type: "string"};
 requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type: "string"};
-requiredConfigParams["adminUserPasswordHash"] = {defaultValue: "", isHidden: true, type: "string", onNewValue = function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
+requiredConfigParams["adminUserPasswordHash"] = {defaultValue: "", isHidden: true, type: "string", onNewValue : function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
 requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["androidAppUrl"] = {label: "Android App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: string};
@@ -99,7 +99,15 @@ function initializeServer()
 			return res.sendStatus(200);
 
 		for (var eachParam in req.body)
-			config[eachParam] = req.body[eachParam];
+		{
+			if (!(eachParam in config))
+				config[eachParam] = {value: req.body[eachParam], defaultValue: "", isHidden: false};
+
+			if ("onNewValue" in config[eachParam])
+				config[eachParam].onNewValue(config, req.body[eachParam]);
+			else
+				config[eachParam].value = req.body[eachParam];
+		}
 
 		fs.writeFileSync(path.join(__dirname, "Config/config.json"), JSON.stringify(config));
 		res.sendStatus(200);
