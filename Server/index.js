@@ -85,7 +85,7 @@ function initializeServer()
 		{
 			if (config[eachItem].isHidden)
 				continue;
-			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input style='padding-left: 10px' type='" + config[eachItem].type + "' " + ((config[eachItem].type == "checkbox" && config[eachItem].value) ? "checked" : "") + " name='" + eachItem + "' value='" + (config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
+			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input style='margin-left: 10px' type='" + config[eachItem].type + "' " + ((config[eachItem].type == "checkbox" && config[eachItem].value) ? "checked" : "") + " name='" + eachItem + "' value='" + (config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
 		}
 		html += "<button type=submit>Save</button></form>"
 		html += "<a href='/admin/Client?type=Screen'>Download Screen Script</a><br />"
@@ -131,7 +131,7 @@ function initializeServer()
 	});
 	apiRoutes.get("/login", function(req,res){
 		var html = "<html><body><form method='POST'>";
-		html += "<input type='text' name='username' /><input type='password' name='password' /><button type='submit'>Login</button>";
+		html += "<span>Username</span><input style='margin-left: 15px' type='text' name='username' /><br /><span>Password</span><input style='margin-left: 15px' type='password' name='password' /><br /><button type='submit'>Login</button>";
 		html += "</form></body></html>"
 		res.send(html);
 	});
