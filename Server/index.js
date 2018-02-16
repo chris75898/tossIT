@@ -248,7 +248,7 @@ function updateClientConfigurations(key, value)
 		if (!fs.existsSync(configLocation))
 			var config = {};
 		else
-			var config = JSON.parse(fs.readFileSync(configLocation), "utf8");
+			var config = JSON.parse(fs.readFileSync(configLocation, "utf8"));
 
 		config.key = value;
 		fs.writeFileSync(configLocation, JSON.stringify(config));
