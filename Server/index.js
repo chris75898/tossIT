@@ -253,9 +253,6 @@ function updateClientConfigurations(key, value)
 		config.key = value;
 		fs.writeFileSync(configLocation, JSON.stringify(config));
 	}
-	
-	config = JSON.parse(config);
-
 }
 
 var sessionCounter = 0;
