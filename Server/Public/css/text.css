@@ -1,0 +1,16 @@
+input[type=text]
+{
+	text-transform: uppercase;
+	margin: 0 auto;
+	display: block;
+	padding: 6px 10px;
+	font-weight: bold;
+	
+}
+::-webkit-input-placeholder
+	{ text-transform: initial;}
+    hr
+    {
+        margin: 15px auto;
+        width: 20%;
+    }
