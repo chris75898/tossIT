@@ -9,12 +9,11 @@ var https = require('https');
 var msg = require("./messaging.js");
 var rooms = require("./rooms.js");
 var info = require("../package.json");
-var targz = require('tar.gz');
+var tar = require('tar');
 var crypto = require('crypto');
 var randomstring = require("randomstring");
 var session = require('express-session')
 var bodyParser = require('body-parser');
-
 
 //
 //Startup
@@ -117,15 +116,13 @@ function initializeServer()
 	});
 	app.get("/admin/Client/Screen", function(req, res)
 	{
-		var filePath = path.join(__dirname, "../Clients/Packages/Screen_" + info.version);
+		var filePath = path.join(__dirname, "../Clients/Packages/Screen_" + info.version + ".tar.gz");
 		if (fs.existsSync(filePath))
-			return res.sendFile(filePath);
+			return res.download(filePath, "Screen_" + info.version + ".tar.gz");
 
-		var compress = new targz().compress(path.join(__dirname, "../Clients/Screen"), filePath, function(err)
-		{
-			res.sendFile(filePath);
-		});
-
+		tar.c({gzip: true, file: filePath}, [path.join(__dirname, "../Clients/Screen/")]).then(() => {
+			return res.download(filePath, "Screen_" + info.version + ".tar.gz");
+		}); 
 	});
 
 	app.get("/Version", function(req,res){

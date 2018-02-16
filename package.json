@@ -18,9 +18,9 @@
     "kurento-client": "",
     "fs": "",
     "pem": "",
-    "tar.gz": "",
     "randomstring": "",
-    "express-session":""
+    "express-session":"", 
+    "tar":""
   },
   "author": "Chris Schulte <chris75898@gmail.com>",
   "license": "Apache-2.0"
