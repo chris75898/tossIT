@@ -244,11 +244,11 @@ function updateClientConfigurations(key, value)
 
 	for (var i=0; i<listOfClients.length; i++)
 	{
-		var configLocation = fs.readFileSync(path.join(__dirname, "../Clients", listOfClients[i], "config.json"), "utf8");
+		var configLocation = path.join(__dirname, "../Clients", listOfClients[i], "config.json");
 		if (!fs.existsSync(configLocation))
 			var config = {};
 		else
-			var config = JSON.parse(fs.readFileSync(configLocation));
+			var config = JSON.parse(fs.readFileSync(configLocation), "utf8");
 
 		config.key = value;
 		fs.writeFileSync(configLocation, JSON.stringify(config));
