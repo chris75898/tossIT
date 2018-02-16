@@ -85,7 +85,7 @@ function initializeServer()
 		{
 			if (config[eachItem].isHidden)
 				continue;
-			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input type='text' name='" + encodeURIComponent(config[eachItem]) + "' value='" + encodeURIComponent(config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
+			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input type='text' name='" + config[eachItem] + "' value='" + encodeURIComponent(config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
 		}
 		html += "<button type=submit>Save</button></form>"
 		html += "<a href='/admin/Client?type=Screen'>Download Screen Script</a><br />"
@@ -96,7 +96,7 @@ function initializeServer()
 		res.send(html);
 	});
 	apiRoutes.post("/admin", function(req, res){
-		var config = fs.readFileSync(path.join(__dirname, "Config/config.json"));
+		var config = fs.readFileSync(path.join(__dirname, "Config/config.json"), "utf8");
 		try {config = JSON.parse(config);} catch(err) {return res.sendStatus(403);}
 
 		if (!req.body)
