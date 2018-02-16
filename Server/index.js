@@ -120,6 +120,21 @@ function initializeServer()
 				config.adminUserSalt.value = crypto.randomBytes(32).toString("hex"); 
 				config.adminUserPasswordHash.value = getHash(config, req.body[eachParam]);
 			}
+			else if (eachParam == "ChromeExtensionUrl")
+			{
+				config[eachParam].value = req.body[eachParam];
+				updateClientConfigurations(eachParam, req.body[eachParam]);
+			}
+			else if (eachParam == "androidAppUrl")
+			{
+				config[eachParam].value = req.body[eachParam];
+				updateClientConfigurations(eachParam, req.body[eachParam]);
+			}
+			else if (eachParam == "iosAppUrl")
+			{
+				config[eachParam].value = req.body[eachParam];
+				updateClientConfigurations(eachParam, req.body[eachParam]);
+			}
 			else if (eachParam == "AllowAnonymousScreenAccess")
 				allowAnonymousScreenAccess = true;
 			else
@@ -152,19 +167,22 @@ function initializeServer()
 	});
 	app.get("/admin/Client", function(req, res)
 	{
+		//Make sure the type exists
 		if (!("type" in req.query))
 			return res.sendStatus(400);
+		//Make sure the correct type exists
 		var allowedTypes = ["chrome", "screen", "ios", "android"];
 		if (allowedTypes.indexOf(req.query.type.toLowerCase()) == -1)
 			return res.sendStatus(400);
+		
+		//Get the correct case for the current type
 		var currentType = req.query.type.charAt(0).toUpperCase() + req.query.type.slice(1).toLowerCase();
+		//Get the file path for
 		var filePath = path.join(__dirname, "../Clients/Packages/" + currentType + "_" + info.version + ".tar.gz");
-		if (fs.existsSync(filePath))
-			return res.download(filePath, currentType + "_" + info.version + ".tar.gz");
 
-		tar.c({gzip: true, file: filePath}, [path.join(__dirname, "../Clients/Screen/")]).then(() => {
-			return res.download(filePath, currentType + "_" + info.version + ".tar.gz");
-		}); 
+		getClientFile(currentType, false, function(path){
+			return res.download(path, currentType + "_" + info.version + ".tar.gz");
+		});
 	});
 
 	app.get("/Version", function(req,res){
@@ -243,7 +261,18 @@ function startServer()
 }
 
 
+function getClientFile(clientType, forceCreate, callback)
+{
+	var destinationPath = path.join(__dirname, "../Clients/Packages", clientType + "_" + info.version + ".tar.gz");
+	var sourcePath = path.join(__dirname, "../Clients", clientType);
 
+	if ((!forceCreate) && fs.existsSync(destinationPath))
+		return callback(destinationPath);
+		
+	tar.c({gzip: true, file: destinationPath}, [sourcePath]).then(() => {
+		return callback(destinationPath);
+	}); 
+}
 function updateClientConfigurations(key, value)
 {
 	var listOfClients = ["Screen"];
@@ -256,8 +285,9 @@ function updateClientConfigurations(key, value)
 		else
 			var config = JSON.parse(fs.readFileSync(configLocation, "utf8"));
 
-		config.key = value;
+		config[key] = value;
 		fs.writeFileSync(configLocation, JSON.stringify(config));
+		getClientFile(listOfClients[i], true, function(){});
 	}
 }
 function getHash(config, password)
