@@ -30,15 +30,15 @@ if (fs.existsSync(configFilePath))
 }
 else config = {};
 var requiredConfigParams = [];
-requiredConfigParams["OrganizationName"] = {label: "Organization's Name", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["adminUserName"] = {label: "Admin Username", defaultValue: "admin", isHidden: false, type: "string"};
-requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type: "string"};
-requiredConfigParams["adminUserPasswordHash"] = {label: "Admin Password", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["androidAppUrl"] = {label: "Android App Url", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["AllowAnonymousScreenAccess"] = {label: "Allow Anonymous Screen Access", defaultValue: false, isHidden: false, type: "boolean"};
+requiredConfigParams["OrganizationName"] = {label: "Organization's Name", defaultValue: "", isHidden: false, type: "text"};
+requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "text"};
+requiredConfigParams["adminUserName"] = {label: "Admin Username", defaultValue: "admin", isHidden: false, type: "text"};
+requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type: "text"};
+requiredConfigParams["adminUserPasswordHash"] = {label: "Admin Password", defaultValue: "", isHidden: false, type: "password"};
+requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "text"};
+requiredConfigParams["androidAppUrl"] = {label: "Android App Url", defaultValue: "", isHidden: false, type: "text"};
+requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: "text"};
+requiredConfigParams["AllowAnonymousScreenAccess"] = {label: "Allow Anonymous Screen Access", defaultValue: false, isHidden: false, type: "checkbox"};
 for (var eachConfig in requiredConfigParams)
 {
 	if (!(eachConfig in config))
@@ -85,7 +85,7 @@ function initializeServer()
 		{
 			if (config[eachItem].isHidden)
 				continue;
-			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input type='text' name='" + eachItem + "' value='" + encodeURIComponent(config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
+			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input style='padding-left: 10px' type='" + config[eachItem].type + "' " + ((config[eachItem].type == "checkbox" && config[eachItem].value) ? "checked" : "") + " name='" + eachItem + "' value='" + (config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
 		}
 		html += "<button type=submit>Save</button></form>"
 		html += "<a href='/admin/Client?type=Screen'>Download Screen Script</a><br />"
@@ -102,6 +102,7 @@ function initializeServer()
 		if (!req.body)
 			return res.sendStatus(200);
 
+		var allowAnonymousScreenAccess = false;
 		for (var eachParam in req.body)
 		{
 			if (!(eachParam in config))
@@ -114,13 +115,17 @@ function initializeServer()
 			}
 			else if (eachParam == "adminUserPasswordHash")
 			{
-				config[adminUserSalt].value = crypto.randomBytes(32); 
-				config[adminUserPasswordHash].value = crypto.createHash("sha512").update(config[adminUserSalt].value + req.body[eachParam]);
+				if (config.adminUserPasswordHash.value == req.body[eachParam] || req.body[eachParam].trim() == "")
+					continue;
+				config.adminUserSalt.value = crypto.randomBytes(32).toString("hex"); 
+				config.adminUserPasswordHash.value = getHash(config, req.body[eachParam]);
 			}
+			else if (eachParam == "AllowAnonymousScreenAccess")
+				allowAnonymousScreenAccess = true;
 			else
 				config[eachParam].value = req.body[eachParam];
 		}
-
+		config["AllowAnonymousScreenAccess"].value = allowAnonymousScreenAccess;
 		fs.writeFileSync(path.join(__dirname, "Config/config.json"), JSON.stringify(config));
 		res.sendStatus(200);
 	});
@@ -138,7 +143,8 @@ function initializeServer()
 			return res.send("Unauthorized");
 		if (req.body.username !== (config.adminUserName.value || config.adminUserName.defaultValue))
 			return res.send("Unauthorized");
-		if ((config.adminUserPasswordHash.value || config.adminUserPasswordHash.defaultValue).length > 0 && ((!req.body.password) || crypto.createHash("sha512").update((config.adminUserSalt.value || config.adminUserSalt.defaultValue) + req.body.password) !== (config.adminUserPasswordHash.value || config.adminUserPasswordHash.defaultValue)))
+		var validHash = config.adminUserPasswordHash.value || config.adminUserPasswordHash.defaultValue;
+		if (validHash.length > 0 && getHash(config, req.body.password) !== validHash)
 			return res.send("Unauthorized");
 
 		req.session.authenticated = true;
@@ -254,7 +260,12 @@ function updateClientConfigurations(key, value)
 		fs.writeFileSync(configLocation, JSON.stringify(config));
 	}
 }
-
+function getHash(config, password)
+{
+	var salt = config.adminUserSalt.value || config.adminUserSalt.defaultValue || "";
+	var testingPassword = password || "";
+	return crypto.createHash("sha512").update(salt + password).digest("hex");
+}
 var sessionCounter = 0;
 function onNewConnection(ws)
 {
