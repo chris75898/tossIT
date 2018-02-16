@@ -2,24 +2,24 @@
     <head>
         <style>
             @font-face {
-  font-family: 'opendyslexic';
-    src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Regular.otf');
-    font-style: normal;
-    font-weight: normal;
-} 
+            font-family: 'opendyslexic';
+                src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Regular.otf');
+                font-style: normal;
+                font-weight: normal;
+            } 
 
-@font-face {
-    font-family: 'opendyslexic';
-    src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Bold.ttf');
-    font-weight: bold;
-    font-style: normal;
-} 
+        @font-face {
+            font-family: 'opendyslexic';
+            src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Bold.ttf');
+            font-weight: bold;
+            font-style: normal;
+        } 
 
-@font-face {
-    font-family: eulexia;
-    src: url('https://dyslexicfonts.com/fonts/eulexia.ttf');
-} 
-</style>
+        @font-face {
+            font-family: eulexia;
+            src: url('https://dyslexicfonts.com/fonts/eulexia.ttf');
+        } 
+        </style>
 <style>
         video.loadingVideo {
             background: black url(images/loading.svg) center center no-repeat;
@@ -154,7 +154,17 @@
             <script src="js/connection.js"></script>
             <script src="js/communication.js"></script>
             <script src="js/functions.js"></script>
-
+            <script>
+                window.addEventListener("load", function(){
+                    $.getJSON("config.json", function(data){
+                        if ("QuickAddress" in data)
+                        {
+                            document.getElementById("quickAddress").display = "block";
+                            document.getElementById("quickAddressValue").innerText = data["QuickAddress"];
+                        }
+                    });
+                });
+            </script>
     </head>
     <body style="font-family:opendyslexic; text-align: center; margin: 0">
         <div id="titlePage" style="display: none">
@@ -169,7 +179,7 @@
         <div id="deviceInfo">
             <div id="deviceName"></div>
             <div id="securityCode" style="display: none";>Access Code: <span id="securityCodeValue" style="letter-spacing: 3px"></span></div>
-            <div id="securityCode">Connect to device at <span style="border-bottom: 2px solid white;">http://alturl.com/QGQEQ</span></div>
+            <div id="quickAddress">Connect to device at <span style="border-bottom: 2px solid white;" id="quickAddressValue"></span></div>
         </div>        
 
         <div id="connecting">

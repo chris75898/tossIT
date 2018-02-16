@@ -29,11 +29,20 @@ if (fs.existsSync(configFilePath))
 	config = JSON.parse(config);
 }
 else config = {};
-var requiredConfigParams = ["version", "OrganizationName", "QuickAddress", "adminUserName", "adminUserSalt", "adminUserPasswordHash", "ChromeExtensionUrl", "androidAppUrl", "iosAppUrl", "AllHostingScreenFromServer"];
-for (var i=0; i<requiredConfigParams.length; i++)
+var requiredConfigParams = [];
+requiredConfigParams["OrganizationName"] = {label: "Organization's Name", defaultValue: "", isHidden: false, type: "string"};
+requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string", onNewValue = function(config, value) {config.value = value; updateClientConfigurations("QuickAddress", value);}};
+requiredConfigParams["adminUserName"] = {label: "Admin Username", defulatValue: "admin", isHidden: false, type: "string"};
+requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type: "string"};
+requiredConfigParams["adminUserPasswordHash"] = {defaultValue: "", isHidden: true, type: "string", onNewValue = function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
+requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "string"};
+requiredConfigParams["androidAppUrl"] = {label: "Android App Url", defaultValue: "", isHidden: false, type: "string"};
+requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: string};
+requiredConfigParams["AllowAnonymousScreenAccess"] = {label: "Allow Anonymous Screen Access", defaultValue: false, isHidden: false, type: "boolean"};
+for (var eachConfig in requiredConfigParams)
 {
-	if (!(requiredConfigParams[i] in config))
-		config[requiredConfigParams[i]] = null;
+	if (!(eachConfig in config))
+		config[eachConfig] = requiredConfigParams[eachConfig];;
 }
 fs.writeFileSync(path.join(__dirname, "Config/config.json"), JSON.stringify(config));
 
@@ -73,9 +82,12 @@ function initializeServer()
 		var html = "<html><body><form method='POST'>";
 		
 		for(var eachItem in config)
-			html += "<span>" + eachItem + "</span><input type='text' name='" + eachItem + "' value='" + (config[eachItem] || "") + "' /><br />";
+			html += "<span>" + (eachItem.label || "") + "</span><input type='text' name='" + encodeURIComponent(eachItem) + "' value='" + encodeURIComponent(eachItem.value || eachItem.defaultValue || "") + "' /><br />";
 		html += "<button type=submit>Save</button></form>"
-		html += "<a href='/admin/Client/Screen'>Download Screen Script</a>"
+		html += "<a href='/admin/Client?type=Screen'>Download Screen Script</a>"
+		html += "<a href='/admin/Client?type=Chrome'>Download Chrome Extension</a>"
+		html += "<a href='/admin/Client?type=Android'>Download Android App</a>"
+		html += "<a href='/admin/Client?type=iOS'>Download iOS App</a>"
 		html += "</body></html>"
 		res.send(html);
 	});
@@ -114,14 +126,20 @@ function initializeServer()
 		req.session.authenticated = true;
 		return res.redirect('/admin'); 
 	});
-	app.get("/admin/Client/Screen", function(req, res)
+	app.get("/admin/Client", function(req, res)
 	{
-		var filePath = path.join(__dirname, "../Clients/Packages/Screen_" + info.version + ".tar.gz");
+		if (!("type" in req.query))
+			return res.sendStatus(400);
+		var allowedTypes = ["chrome", "screen", "ios", "android"];
+		if (allowedTypes.indexOf(req.query.type.toLowerCase()) == -1)
+			return res.sendStatus(400);
+		var currentType = req.query.type.charAt(0).toUpperCase() + req.query.type.slice(1).toLowerCase();
+		var filePath = path.join(__dirname, "../Clients/Packages/" + currentType + "_" + info.version + ".tar.gz");
 		if (fs.existsSync(filePath))
-			return res.download(filePath, "Screen_" + info.version + ".tar.gz");
+			return res.download(filePath, currentType + "_" + info.version + ".tar.gz");
 
 		tar.c({gzip: true, file: filePath}, [path.join(__dirname, "../Clients/Screen/")]).then(() => {
-			return res.download(filePath, "Screen_" + info.version + ".tar.gz");
+			return res.download(filePath, currentType + "_" + info.version + ".tar.gz");
 		}); 
 	});
 
@@ -131,11 +149,11 @@ function initializeServer()
 	
 	app.use(express.static(path.join(__dirname, 'Public')));
 
-	var config = fs.readFileSync(path.join(__dirname, "Config/config.json"));
+	var config = fs.readFileSync(path.join(__dirname, "Config/config.json"), "utf8");
 	config = JSON.parse(config);
-	if (config.AllHostingScreenFromServer == "1")
+	if (config.AllowAnonymousScreenAccess.value === true)
 		app.use("/Screen", express.static(path.join(__dirname, '../Client/Screen')));
-		
+
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(session({ secret: randomstring.generate(), resave: true, saveUninitialized: false}));
 	app.use(verifyAuthentication);
@@ -202,7 +220,25 @@ function startServer()
 
 
 
+function updateClientConfigurations(key, value)
+{
+	var listOfClients = ["Screen"];
 
+	for (var i=0; i<listOfClients.length; i++)
+	{
+		var configLocation = fs.readFileSync(path.join(__dirname, "../Clients", listOfClients[i], "config.json"), "utf8");
+		if (!fs.existsSync(configLocation))
+			var config = {};
+		else
+			var config = JSON.parse(fs.readFileSync(configLocation));
+
+		config.key = value;
+		fs.writeFileSync(configLocation, JSON.stringify(config));
+	}
+	
+	config = JSON.parse(config);
+
+}
 
 var sessionCounter = 0;
 function onNewConnection(ws)
