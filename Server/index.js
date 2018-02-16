@@ -32,7 +32,7 @@ else config = {};
 var requiredConfigParams = [];
 requiredConfigParams["OrganizationName"] = {label: "Organization's Name", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string", onNewValue : function(config, value) {config.value = value; updateClientConfigurations("QuickAddress", value);}};
-requiredConfigParams["adminUserName"] = {label: "Admin Username", defulatValue: "admin", isHidden: false, type: "string"};
+requiredConfigParams["adminUserName"] = {label: "Admin Username", defaultValue: "admin", isHidden: false, type: "string"};
 requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type: "string"};
 requiredConfigParams["adminUserPasswordHash"] = {defaultValue: "", isHidden: true, type: "string", onNewValue : function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
 requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "string"};
