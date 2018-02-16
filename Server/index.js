@@ -34,7 +34,7 @@ requiredConfigParams["OrganizationName"] = {label: "Organization's Name", defaul
 requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string", onNewValue : function(config, value) {config.value = value; updateClientConfigurations("QuickAddress", value);}};
 requiredConfigParams["adminUserName"] = {label: "Admin Username", defaultValue: "admin", isHidden: false, type: "string"};
 requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type: "string"};
-requiredConfigParams["adminUserPasswordHash"] = {defaultValue: "", isHidden: true, type: "string", onNewValue : function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
+requiredConfigParams["adminUserPasswordHash"] = {label: "Admin Password", defaultValue: "", isHidden: false, type: "string", onNewValue : function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
 requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["androidAppUrl"] = {label: "Android App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: "string"};
@@ -82,7 +82,11 @@ function initializeServer()
 		var html = "<html><body><form method='POST'>";
 		
 		for(var eachItem in config)
-			html += "<span>" + (config[eachItem].label || "") + "</span><input type='text' name='" + encodeURIComponent(config[eachItem]) + "' value='" + encodeURIComponent(config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
+		{
+			if (config.eachItem.isHidden)
+				continue;
+			html += "<span>" + (config[eachItem].label || eachItem) + "</span><input type='text' name='" + encodeURIComponent(config[eachItem]) + "' value='" + encodeURIComponent(config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
+		}
 		html += "<button type=submit>Save</button></form>"
 		html += "<a href='/admin/Client?type=Screen'>Download Screen Script</a><br />"
 		html += "<a href='/admin/Client?type=Chrome'>Download Chrome Extension</a><br />"
