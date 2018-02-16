@@ -82,12 +82,12 @@ function initializeServer()
 		var html = "<html><body><form method='POST'>";
 		
 		for(var eachItem in config)
-			html += "<span>" + (eachItem.label || "") + "</span><input type='text' name='" + encodeURIComponent(eachItem) + "' value='" + encodeURIComponent(eachItem.value || eachItem.defaultValue || "") + "' /><br />";
+			html += "<span>" + (config[eachItem].label || "") + "</span><input type='text' name='" + encodeURIComponent(config[eachItem]) + "' value='" + encodeURIComponent(config[eachItem].value || config[eachItem].defaultValue || "") + "' /><br />";
 		html += "<button type=submit>Save</button></form>"
-		html += "<a href='/admin/Client?type=Screen'>Download Screen Script</a>"
-		html += "<a href='/admin/Client?type=Chrome'>Download Chrome Extension</a>"
-		html += "<a href='/admin/Client?type=Android'>Download Android App</a>"
-		html += "<a href='/admin/Client?type=iOS'>Download iOS App</a>"
+		html += "<a href='/admin/Client?type=Screen'>Download Screen Script</a><br />"
+		html += "<a href='/admin/Client?type=Chrome'>Download Chrome Extension</a><br />"
+		html += "<a href='/admin/Client?type=Android'>Download Android App</a><br />"
+		html += "<a href='/admin/Client?type=iOS'>Download iOS App</a><br />"
 		html += "</body></html>"
 		res.send(html);
 	});
@@ -101,7 +101,7 @@ function initializeServer()
 		for (var eachParam in req.body)
 		{
 			if (!(eachParam in config))
-				config[eachParam] = {value: req.body[eachParam], defaultValue: "", isHidden: false};
+				config[eachParam] = {value: req.body[eachParam], defaultValue: "", isHidden: false, type: "string"};
 
 			if ("onNewValue" in config[eachParam])
 				config[eachParam].onNewValue(config, req.body[eachParam]);
