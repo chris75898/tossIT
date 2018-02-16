@@ -124,11 +124,9 @@ function initializeServer()
 
 		if (!req.body.username)
 			return res.send("Unauthorized");
-		if (config.adminUserName && (req.body.username !== config.adminUserName))
+		if (req.body.username !== (config.adminUserName.value || config.adminUserName.defaultValue))
 			return res.send("Unauthorized");
-		if ((!config.adminUserName) && (req.body.username !== "admin"))
-			return res.send("Unauthorized");
-		if (config.adminUserPasswordHash && ((!req.body.password) || crypto.createHash("sha512").update(adminUserSalt + req.body.password) !== config.adminUserPasswordHash))
+		if ((config.adminUserPasswordHash.value || config.adminUserPasswordHash.defaultValue).length > 0 && ((!req.body.password) || crypto.createHash("sha512").update(adminUserSalt + req.body.password) !== config.adminUserPasswordHash))
 			return res.send("Unauthorized");
 
 		req.session.authenticated = true;
