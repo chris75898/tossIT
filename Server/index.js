@@ -31,10 +31,10 @@ if (fs.existsSync(configFilePath))
 else config = {};
 var requiredConfigParams = [];
 requiredConfigParams["OrganizationName"] = {label: "Organization's Name", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string", onNewValue : function(config, value) {config.value = value; updateClientConfigurations("QuickAddress", value);}};
+requiredConfigParams["QuickAddress"] = {label: "Shortened Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["adminUserName"] = {label: "Admin Username", defaultValue: "admin", isHidden: false, type: "string"};
 requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type: "string"};
-requiredConfigParams["adminUserPasswordHash"] = {label: "Admin Password", defaultValue: "", isHidden: false, type: "string", onNewValue : function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
+requiredConfigParams["adminUserPasswordHash"] = {label: "Admin Password", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["androidAppUrl"] = {label: "Android App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: "string"};
@@ -107,8 +107,16 @@ function initializeServer()
 			if (!(eachParam in config))
 				config[eachParam] = {value: req.body[eachParam], defaultValue: "", isHidden: false, type: "string"};
 
-			if ("onNewValue" in config[eachParam])
-				config[eachParam].onNewValue(config, req.body[eachParam]);
+			if (eachParam == "QuickAddress")
+			{
+				config[eachParam].value = req.body[eachParam]; 
+				updateClientConfigurations("QuickAddress", req.body[eachParam]);
+			}
+			else if (eachParam == "adminUserPasswordHash")
+			{
+				config[adminUserSalt].value = crypto.randomBytes(32); 
+				config[adminUserPasswordHash].value = crypto.createHash("sha512").update(config[adminUserSalt].value + req.body[eachParam]);
+			}
 			else
 				config[eachParam].value = req.body[eachParam];
 		}
@@ -130,7 +138,7 @@ function initializeServer()
 			return res.send("Unauthorized");
 		if (req.body.username !== (config.adminUserName.value || config.adminUserName.defaultValue))
 			return res.send("Unauthorized");
-		if ((config.adminUserPasswordHash.value || config.adminUserPasswordHash.defaultValue).length > 0 && ((!req.body.password) || crypto.createHash("sha512").update(adminUserSalt + req.body.password) !== config.adminUserPasswordHash))
+		if ((config.adminUserPasswordHash.value || config.adminUserPasswordHash.defaultValue).length > 0 && ((!req.body.password) || crypto.createHash("sha512").update((config.adminUserSalt.value || config.adminUserSalt.defaultValue) + req.body.password) !== (config.adminUserPasswordHash.value || config.adminUserPasswordHash.defaultValue)))
 			return res.send("Unauthorized");
 
 		req.session.authenticated = true;
