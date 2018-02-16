@@ -37,7 +37,7 @@ requiredConfigParams["adminUserSalt"] = {defaultValue: "", isHidden: true, type:
 requiredConfigParams["adminUserPasswordHash"] = {defaultValue: "", isHidden: true, type: "string", onNewValue : function(config, value) {config.adminUserSalt.value = crypto.randomBytes(32); config.adminUserPasswordHash = crypto.createHash("sha512").update(config.adminUserSalt.value + value);}};
 requiredConfigParams["ChromeExtensionUrl"] = {label: "Chrome App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["androidAppUrl"] = {label: "Android App Url", defaultValue: "", isHidden: false, type: "string"};
-requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: string};
+requiredConfigParams["iosAppUrl"] = {label: "iOS App Url", defaultValue: "", isHidden: false, type: "string"};
 requiredConfigParams["AllowAnonymousScreenAccess"] = {label: "Allow Anonymous Screen Access", defaultValue: false, isHidden: false, type: "boolean"};
 for (var eachConfig in requiredConfigParams)
 {
