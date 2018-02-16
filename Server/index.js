@@ -128,7 +128,14 @@ function initializeServer()
 	app.get("/Version", function(req,res){
 		res.send(info.version);
 	});
+	
 	app.use(express.static(path.join(__dirname, 'Public')));
+
+	var config = fs.readFileSync(path.join(__dirname, "Config/config.json"));
+	config = JSON.parse(config);
+	if (config.AllHostingScreenFromServer == "1")
+		app.use("/Screen", express.static(path.join(__dirname, '../Client/Screen')));
+		
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(session({ secret: randomstring.generate(), resave: true, saveUninitialized: false}));
 	app.use(verifyAuthentication);
