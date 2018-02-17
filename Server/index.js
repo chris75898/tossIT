@@ -194,7 +194,7 @@ function initializeServer()
 	var config = fs.readFileSync(path.join(__dirname, "Config/config.json"), "utf8");
 	config = JSON.parse(config);
 	if (config.AllowAnonymousScreenAccess.value === true)
-		app.use("/Screen", express.static(path.join(__dirname, '../Client/Screen')));
+		app.use("/Screen", express.static(path.join(__dirname, '../Clients/Screen')));
 
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(session({ secret: randomstring.generate(), resave: true, saveUninitialized: false}));
