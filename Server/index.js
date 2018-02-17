@@ -141,6 +141,7 @@ function initializeServer()
 				config[eachParam].value = req.body[eachParam];
 		}
 		config["AllowAnonymousScreenAccess"].value = allowAnonymousScreenAccess;
+		updateClientConfigurations("AllowAnonymousScreenAccess", allowAnonymousScreenAccess);
 		fs.writeFileSync(path.join(__dirname, "Config/config.json"), JSON.stringify(config));
 		res.sendStatus(200);
 	});
