@@ -159,8 +159,12 @@
                     $.getJSON("config.json", function(data){
                         if ("QuickAddress" in data)
                         {
-                            document.getElementById("quickAddress").display = "block";
-                            document.getElementById("quickAddressValue").innerText = data["QuickAddress"];
+                            var containers = document.getElementsByClassName("quickAddressContainer");
+                            var values = document.getElementsByClassName("quickAddressValue");
+                            for (var i=0; i<values.length; i++)
+                                values[i].innerText = data["QuickAddress"];
+                            for (var i=0; i<containers.length; i++)
+                                containers[i].style.display = "block";
                         }
                     });
                 });
@@ -171,7 +175,7 @@
             <div><img src="images/horseShoe.png" style="padding: 10px; margin-bottom: 5px; width:18%; background-color: white; border-radius: 50%"/></div>
             <div class="title">tossIT</div>
             <br /><br />
-            <div>Start Sharing Now<br />Go to http://alturl.com/QGQEQ from any device</div>
+            <div class="quickAddressContainer" style="display: none">Start Sharing Now<br />Go to <span style="border-bottom: 2px solid white;" class="quickAddressValue"></span> from any device</div>
             <br />
             <div id="deviceOptions"><img src="images/desktop.svg" /><img src="images/laptop.svg" /><img src="images/iPad.svg" /><img src="images/iPhone.svg" /><img src="images/android.svg" /></div>            
         </div>
@@ -179,7 +183,7 @@
         <div id="deviceInfo">
             <div id="deviceName"></div>
             <div id="securityCode" style="display: none";>Access Code: <span id="securityCodeValue" style="letter-spacing: 3px"></span></div>
-            <div id="quickAddress">Connect to device at <span style="border-bottom: 2px solid white;" id="quickAddressValue"></span></div>
+            <div class="quickAddressContainer" style="display: none">Connect to device at <span style="border-bottom: 2px solid white;" class="quickAddressValue"></span></div>
         </div>        
 
         <div id="connecting">
